@@ -1,0 +1,4 @@
+skin rose
+skinparam handwritten true
+skinparam defaultTextAlignment center
+skinparam DefaultFontName "Ink Free"

@@ -1,0 +1,34 @@
+@startuml context diagram
+!includeurl style/style.pu
+skinparam Nodesep 1
+skinparam ranksep 20
+
+title Trafic control system: Context Diagram
+
+storage "**Trafic Control System**" as TCS #white;line.dashed;line:darkgrey;
+
+
+' Terminals
+node AmpleLights1  {
+  Rectangle "Red LED" as RedLed1 
+  Rectangle "Orange LED" as OrangeLed1
+  Rectangle "Green LED" as GreenLed1
+  RedLed1 --[hidden]> OrangeLed1
+  OrangeLed1 --[hidden]> GreenLed1
+}
+
+node AmpleLights2  {
+  Rectangle "Red LED" as RedLed2
+  Rectangle "Orange LED" as OrangeLed2
+  Rectangle "Green LED" as GreenLed2
+  RedLed2 --[hidden]> OrangeLed2
+  OrangeLed2 --[hidden]> GreenLed2
+
+}
+
+
+' relationships between the terminals and the system.
+TCS --> AmpleLights1 : configure\nstart
+TCS --> AmpleLights2 : configure\nstart
+
+@enduml
