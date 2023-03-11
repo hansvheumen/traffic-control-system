@@ -1,0 +1,21 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+
+' default header Property, Value
+Title Traffic controll deployment diagram
+
+Deployment_Node_L(arduino1, "Arduino 1") {
+    Container(traficController, "TraficController", "Compiled sketch")
+    Container(traficLightEast, "TraficLight East", "Compiled sketch")
+}
+
+Deployment_Node_R(arduino2, "Arduino 2") {
+    Container(traficLightWest, "TraficLight West", "Compiled sketch")
+}
+
+
+
+' starting with v.2.5.0 relationships support properties too
+Rel_R(traficController, traficLightWest, "Messages", "Serial Protol")
+Rel_L(traficController, traficLightEast, "Messages", "Serial Protocol")
+@enduml
