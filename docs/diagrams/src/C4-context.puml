@@ -1,15 +1,23 @@
 @startuml context diagram
+!include <c4/C4_Context.puml>  
+
+'ref http://plantuml.com/stdlib
+!include <office/Users/user.puml>
+!include <office/Users/mobile_user.puml>
+
 !includeurl style/style.pu
 skinparam Nodesep 1
 skinparam ranksep 20
 
-title Trafic control system: Context Diagram
+title Traffic control system: Context Diagram
+
+Person(technician  , Technician  )
 
 storage "**Trafic Control System**" as TCS #white;line.dashed;line:darkgrey;
 
 
 ' Terminals
-node AmpleLights1  {
+node TrafficLightEast  {
   Rectangle "Red LED" as RedLed1 
   Rectangle "Orange LED" as OrangeLed1
   Rectangle "Green LED" as GreenLed1
@@ -17,7 +25,7 @@ node AmpleLights1  {
   OrangeLed1 --[hidden]> GreenLed1
 }
 
-node AmpleLights2  {
+node TrafficLightWest  {
   Rectangle "Red LED" as RedLed2
   Rectangle "Orange LED" as OrangeLed2
   Rectangle "Green LED" as GreenLed2
@@ -28,7 +36,8 @@ node AmpleLights2  {
 
 
 ' relationships between the terminals and the system.
-TCS --> AmpleLights1 : configure\nstart
-TCS --> AmpleLights2 : configure\nstart
+Rel(technician, TCS, "maintains")
+TCS --> TrafficLightEast : configure\nstart
+TCS --> TrafficLightWest : configure\nstart
 
 @enduml

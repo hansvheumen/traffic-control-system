@@ -1,21 +1,21 @@
 @startuml component diagram
 !includeurl style/style.pu
 skinparam Nodesep 10
-skinparam ranksep 20
+' skinparam ranksep 20
 
 title Trafic control system: Component Diagram
 
 
 ' Components
 component configurator
-component ampleEngine
-component ampleLights
+component TrafficController
+component TrafficLight
 
 ' relationships between the components.
-configurator --> ampleEngine : configures
-configurator --> ampleEngine : starts
-ampleEngine --> ampleEngine : interacts with
-ampleEngine --> ampleLights : sends commands
+configurator --> TrafficController : configures
+configurator --> TrafficController : starts
+TrafficController --> TrafficController : ack-noack\ntraffic controller state
+TrafficController --> TrafficLight : sends commands
 
 
 @enduml

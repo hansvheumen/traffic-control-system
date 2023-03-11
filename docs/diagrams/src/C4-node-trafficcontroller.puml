@@ -1,0 +1,33 @@
+@startuml node diagram trafficController
+!includeurl style/style.pu
+skinparam Nodesep 10
+' skinparam ranksep 20
+
+title Trafic control system: Node Diagram Ample Engine
+
+
+' Classes
+class "Traffic Controller" as trafficController
+{
+    - ATrafficLight trafficLightEast
+    - TrafficLight trafficLightWest
+    - AmpleState previousAmpleState
+    - start {field}
+    - duration {field}
+    - TrafficState trafficState;
+    - TrafficState previousTrafficState;
+
+    + void fsm() {method}
+    - void stateChanged() {method}
+    - void resetTimer() {method}
+    - boolean timeElapsed() {method}
+
+    + enum TrafficState {
+        INIT, STOP, WARNING, GO, TERM
+    }
+
+}
+
+' relationships between classes.
+
+@enduml

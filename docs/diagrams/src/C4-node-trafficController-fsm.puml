@@ -1,0 +1,24 @@
+@startuml fsm traffic controller
+!includeurl style/style.pu
+
+title Traffic Controller FSM
+
+' states transitions and actions
+[*] --> INIT
+INIT --> DRIVING_EW
+
+DRIVING_EW --> PREPARING_STOP_E: timeElapsed()\nresetTimer()
+PREPARING_STOP_E --> DRIVING_WE : timeElapsed()/\nresetTimer()
+DRIVING_WE --> PREPARING_STOP_W : timeElapsed()\nresetTimer()
+PREPARING_STOP_W --> DRIVING_EW : timeElapsed()\nresetTimer()
+
+
+' entry and exit actions
+INIT : stopEW()\nstopWE()
+PREPARING_STOP_W : preparingStopW()
+DRIVING_EW : drivingEW()
+PREPARING_STOP_E : preparingStopE()
+DRIVING_WE : drivingWE()
+TERM : blinking()
+
+@enduml
