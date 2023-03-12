@@ -5,8 +5,10 @@
 Title Traffic controll deployment diagram
 
 Deployment_Node_L(arduino1, "Arduino 1") {
-    Container(traficController, "TraficController", "Compiled sketch")
-    Container(traficLightEast, "TraficLight East", "Compiled sketch")
+    Container(master, "Master East", "Compiled sketch"){
+    Node(traficController, "TraficController", "Component")
+    Node(traficLightEast, "TraficLight East", "Component")
+}
 }
 
 Deployment_Node_R(arduino2, "Arduino 2") {
@@ -14,8 +16,7 @@ Deployment_Node_R(arduino2, "Arduino 2") {
 }
 
 
-
-' starting with v.2.5.0 relationships support properties too
+' relations
 Rel_R(traficController, traficLightWest, "Messages", "Serial Protol")
 Rel_L(traficController, traficLightEast, "Messages", "Serial Protocol")
 @enduml
