@@ -6,14 +6,14 @@
 !include <office/Users/mobile_user.puml>
 
 !includeurl style/style.pu
-skinparam Nodesep 1
-skinparam ranksep 20
+skinparam Nodesep 70
+skinparam ranksep 30
 
-title Traffic control system\nContext Diagram (Software view)
+title Traffic control system\nContext Diagram (ES view)
 
-Person(technician  , Technician  )
 
-storage "**Trafic Control System**" as TCS #white;line.dashed;line:darkgrey;
+storage "**Master**" as Master #white;line.dashed;line:darkgrey;
+storage "**Slave**" as Slave #white;line.dashed;line:darkgrey;
 
 
 ' Terminals
@@ -36,8 +36,10 @@ node TrafficLightWest  {
 
 
 ' relationships between the terminals and the system.
-Rel(technician, TCS, "maintains")
-TCS --> TrafficLightEast : configure\nstart
-TCS --> TrafficLightWest : configure\nstart
+
+Master --> Slave : STOP, TRANSITION, GO, WARNING
+Slave --> Master : ACK, NACK, HARTBEAT?
+Slave --> TrafficLightEast : RED:on, RED:off, ORANGE:on, ORANGE:off, ORANGE:blinking, GREEN:on, GREEN:off
+Master --> TrafficLightWest : RED:on, RED:off, ORANGE:on, ORANGE:off, ORANGE:blinking, GREEN:on, GREEN:off
 
 @enduml
