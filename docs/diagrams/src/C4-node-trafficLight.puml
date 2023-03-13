@@ -1,0 +1,31 @@
+@startuml node diagram trafficLight
+!includeurl style/style.pu
+skinparam Nodesep 10
+' skinparam ranksep 20
+
+title Trafic control system:\nNode Diagram TrifficLight
+
+
+' Classes
+class "Traffic Light" as trafficLight
+{
+    - name {field}
+    - redLight {field}
+    - orangeLight {field}
+    - greenLight {field}
+
+    - State state;
+
+    + boolean setState(State state) {method}
+    + State getState() {method}
+    + String getName() {method}
+
+    + enum State {
+        STOP, TRANSITION, GO, WARNING
+    }
+
+}
+
+' relations
+
+@enduml

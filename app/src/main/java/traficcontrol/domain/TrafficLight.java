@@ -16,7 +16,7 @@ public class TrafficLight {
         setState(State.STOP);
     }
 
-    public void setState(State state) {
+    public boolean setState(State state) {
         this.state = state;
         switch (state) {
             case STOP:
@@ -41,11 +41,15 @@ public class TrafficLight {
                 break;
 
         }
-
+        return true;
     }
 
     public State getState() {
         return state;
+    }
+
+    public String getName() {
+        return name;
     }
 
     enum State {

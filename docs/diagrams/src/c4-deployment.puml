@@ -2,7 +2,7 @@
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
 
 ' default header Property, Value
-Title Traffic controll deployment diagram
+Title Traffic controll system\ndeployment diagram
 
 Deployment_Node_L(arduino1, "Arduino 1") {
     Container(master, "Master East", "Compiled sketch"){

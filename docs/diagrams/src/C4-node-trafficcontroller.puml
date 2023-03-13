@@ -3,13 +3,13 @@
 skinparam Nodesep 10
 ' skinparam ranksep 20
 
-title Trafic control system: Node Diagram Ample Engine
+title Trafic control system:\nNode Diagram Traffic Controller
 
 
 ' Classes
 class "Traffic Controller" as trafficController
 {
-    - ATrafficLight trafficLightEast
+    - TrafficLight trafficLightEast
     - TrafficLight trafficLightWest
     - AmpleState previousAmpleState
     - start {field}
