@@ -1,4 +1,4 @@
-@startuml context diagram
+@startuml context diagram (ES view)
 !include <c4/C4_Context.puml>  
 
 'ref http://plantuml.com/stdlib
