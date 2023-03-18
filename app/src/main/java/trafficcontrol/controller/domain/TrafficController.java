@@ -1,16 +1,21 @@
-package traficcontrol.domain;
+package trafficcontrol.controller.domain;
 
-import traficcontrol.util.TrafficLogger;
+import trafficcontrol.common.Message;
+import trafficcontrol.common.TrafficLightState;
+import trafficcontrol.controller.port.in.HandleMessageUseCase;
+import trafficcontrol.controller.port.out.SendCommandTrafficLightPort;
+import trafficcontrol.util.TrafficLogger;
 
-public class TrafficController {
-    private TrafficLight trafficLightEast;
-    private TrafficLight trafficLightWest;
+public class TrafficController implements HandleMessageUseCase{
+    private SendCommandTrafficLightPort trafficLightEast;
+    private SendCommandTrafficLightPort trafficLightWest;
     private long start;
     private long duration = 3000;
     private TrafficState trafficState;
     private TrafficState previousTrafficState;
 
-    public TrafficController(TrafficLight trafficLightEast, TrafficLight trafficLightWest) {
+    public TrafficController(SendCommandTrafficLightPort trafficLightEast,
+            SendCommandTrafficLightPort trafficLightWest) {
         this.trafficLightEast = trafficLightEast;
         this.trafficLightWest = trafficLightWest;
         resetTimer();
@@ -78,6 +83,17 @@ public class TrafficController {
                     trafficState = TrafficState.DRIVING_EW;
                 }
                 break;
+            case OUT_OF_ORDER:
+                if (stateChanged()) {
+                    saveState();
+                    outOfOrder();
+                    effectuateState();
+                }
+                if (timeElapsed(duration)) {
+                    resetTimer();
+                    trafficState = TrafficState.DRIVING_EW;
+                }
+                break;
             default:
                 System.out.println("DEFAULT");
                 break;
@@ -93,34 +109,34 @@ public class TrafficController {
     }
 
     private void stopEW() {
-        trafficLightEast.setState(TrafficLight.State.STOP);
+        trafficLightEast.sendState(TrafficLightState.STOP);
     }
 
     private void stopWE() {
-        trafficLightWest.setState(TrafficLight.State.STOP);
+        trafficLightWest.sendState(TrafficLightState.STOP);
     }
 
     private void drivingEW() {
-        trafficLightEast.setState(TrafficLight.State.GO);
-        trafficLightWest.setState(TrafficLight.State.STOP);
+        trafficLightEast.sendState(TrafficLightState.GO);
+        trafficLightWest.sendState(TrafficLightState.STOP);
     }
 
     private void preparingStopE() {
-        trafficLightEast.setState(TrafficLight.State.TRANSITION);
+        trafficLightEast.sendState(TrafficLightState.TRANSITION);
     }
 
     private void drivingWE() {
-        trafficLightWest.setState(TrafficLight.State.GO);
-        trafficLightEast.setState(TrafficLight.State.STOP);
+        trafficLightWest.sendState(TrafficLightState.GO);
+        trafficLightEast.sendState(TrafficLightState.STOP);
     }
 
     private void preparingStopW() {
-        trafficLightWest.setState(TrafficLight.State.TRANSITION);
+        trafficLightWest.sendState(TrafficLightState.TRANSITION);
     }
 
-    private void blinking(){
-        trafficLightEast.setState(TrafficLight.State.TRANSITION);
-        trafficLightWest.setState(TrafficLight.State.TRANSITION);
+    private void outOfOrder() {
+        trafficLightEast.sendState(TrafficLightState.WARNING);
+        trafficLightWest.sendState(TrafficLightState.WARNING);
     }
 
     private boolean stateChanged() {
@@ -132,9 +148,7 @@ public class TrafficController {
     }
 
     private void effectuateState() {
-        String message = String.format("State: %s,   East: %s    West %s \n", this.trafficState,
-                this.trafficLightEast.getState(), this.trafficLightWest.getState());
-
+        String message = String.format("State: %s,    \n", this.trafficState);
         TrafficLogger.logger.info(message);
     }
 
@@ -144,6 +158,13 @@ public class TrafficController {
         DRIVING_EW,
         PREPARE_STOP_E,
         DRIVING_WE,
+        OUT_OF_ORDER,
         TERM
+    }
+
+    @Override
+    public void handleMessage(Message message) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleMessage'");
     }
 }

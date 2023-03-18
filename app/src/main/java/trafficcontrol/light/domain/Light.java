@@ -1,4 +1,4 @@
-package traficcontrol.domain;
+package trafficcontrol.light.domain;
 
 public class Light {
     private final Colour colour;
