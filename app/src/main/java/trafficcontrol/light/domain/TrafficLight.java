@@ -18,7 +18,7 @@ public class TrafficLight {
     }
 
     public boolean setState(TrafficLightState state) {
-        TrafficLogger.logger.info("TrafficLight " + name + " state changed from to " + state);
+        TrafficLogger.log("TrafficLight " + name + " state changed from to " + state);
         this.state = state;
         switch (state) {
             case STOP:

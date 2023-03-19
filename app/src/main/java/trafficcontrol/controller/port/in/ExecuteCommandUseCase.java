@@ -1,6 +1,6 @@
 package trafficcontrol.controller.port.in;
 
-import trafficcontrol.controller.domain.TrafficController.TrafficState;
+import trafficcontrol.controller.service.ManageTrafficService.TrafficState;
 
 public interface ExecuteCommandUseCase {
 

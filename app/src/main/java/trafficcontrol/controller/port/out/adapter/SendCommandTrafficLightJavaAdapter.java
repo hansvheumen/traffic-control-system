@@ -3,6 +3,7 @@ package trafficcontrol.controller.port.out.adapter;
 import trafficcontrol.common.TrafficLightState;
 import trafficcontrol.controller.port.out.SendCommandTrafficLightPort;
 import trafficcontrol.infrastructure.java.SendExecuteCommandJava;
+import trafficcontrol.util.TrafficLogger;
 
 public class SendCommandTrafficLightJavaAdapter implements SendCommandTrafficLightPort {
 
@@ -14,7 +15,8 @@ public class SendCommandTrafficLightJavaAdapter implements SendCommandTrafficLig
 
     @Override
     public void sendState(TrafficLightState state) {
-        sendExecuteCommand.executeCommand(state);
+        TrafficLogger.log("SendCommandTrafficLightJavaAdapter.sendState()" + state);
+        // sendExecuteCommand.executeCommand(state);
     }
 
 }

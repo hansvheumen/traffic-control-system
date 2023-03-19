@@ -4,8 +4,8 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import trafficcontrol.controller.domain.TrafficController.TrafficState;
 import trafficcontrol.controller.port.in.ExecuteCommandUseCase;
+import trafficcontrol.controller.service.ManageTrafficService.TrafficState;
 
 public class ExecuteCommandJavaAdapter {
 
