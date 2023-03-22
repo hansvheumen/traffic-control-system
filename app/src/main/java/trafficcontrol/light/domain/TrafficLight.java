@@ -1,22 +1,24 @@
-package traficcontrol.domain;
+package trafficcontrol.light.domain;
 
-import traficcontrol.domain.Light.Colour;
-import traficcontrol.domain.Light.LightState;
-
+import trafficcontrol.common.TrafficLightState;
+import trafficcontrol.light.domain.Light.Colour;
+import trafficcontrol.light.domain.Light.LightState;
+import trafficcontrol.util.TrafficLogger;
 
 public class TrafficLight {
     private String name;
     private Light redLight = new Light(Colour.RED);
     private Light orangeLight = new Light(Colour.ORANGE);
     private Light greenLight = new Light(Colour.GREEN);
-    private State state;
+    private TrafficLightState state;
 
     public TrafficLight(String name) {
         this.name = name;
-        setState(State.STOP);
+        setState(TrafficLightState.STOP);
     }
 
-    public boolean setState(State state) {
+    public boolean setState(TrafficLightState state) {
+        TrafficLogger.log("TrafficLight {} state changed from to {}", name, state);
         this.state = state;
         switch (state) {
             case STOP:
@@ -44,16 +46,12 @@ public class TrafficLight {
         return true;
     }
 
-    public State getState() {
+    public TrafficLightState getState() {
         return state;
     }
 
     public String getName() {
         return name;
-    }
-
-    enum State {
-        STOP, TRANSITION, GO, WARNING
     }
 
 }

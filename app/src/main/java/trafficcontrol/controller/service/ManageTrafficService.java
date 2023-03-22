@@ -1,25 +1,36 @@
-package traficcontrol.domain;
+package trafficcontrol.controller.service;
 
-import traficcontrol.util.TrafficLogger;
+import java.io.Closeable;
+import java.io.IOException;
 
-public class TrafficController {
-    private TrafficLight trafficLightEast;
-    private TrafficLight trafficLightWest;
+import trafficcontrol.common.ResponseMessage;
+import trafficcontrol.common.TrafficLightState;
+import trafficcontrol.controller.port.in.HandleMessageUseCase;
+import trafficcontrol.controller.port.out.SendCommandTrafficLightPort;
+import trafficcontrol.util.Config;
+import trafficcontrol.util.TrafficLogger;
+
+public class ManageTrafficService implements HandleMessageUseCase, Closeable {
+    private SendCommandTrafficLightPort trafficLightEast;
+    private SendCommandTrafficLightPort trafficLightWest;
     private long start;
-    private long duration = 3000;
+    private long faseDuration = 1;
     private TrafficState trafficState;
     private TrafficState previousTrafficState;
+    private boolean keepLooping = true;
 
-    public TrafficController(TrafficLight trafficLightEast, TrafficLight trafficLightWest) {
+    public ManageTrafficService(SendCommandTrafficLightPort trafficLightEast,
+            SendCommandTrafficLightPort trafficLightWest) {
         this.trafficLightEast = trafficLightEast;
         this.trafficLightWest = trafficLightWest;
         resetTimer();
         trafficState = TrafficState.INIT;
         previousTrafficState = TrafficState.INIT;
+        faseDuration = Config.getFaseDuration();
     }
 
     public void run() {
-        while (true) {
+        while (keepLooping) {
             this.fsm();
         }
     }
@@ -40,7 +51,7 @@ public class TrafficController {
                     drivingEW();
                     effectuateState();
                 }
-                if (timeElapsed(duration)) {
+                if (timeElapsed(faseDuration)) {
                     resetTimer();
                     trafficState = TrafficState.PREPARE_STOP_E;
                 }
@@ -51,7 +62,7 @@ public class TrafficController {
                     preparingStopE();
                     effectuateState();
                 }
-                if (timeElapsed(duration)) {
+                if (timeElapsed(faseDuration)) {
                     resetTimer();
                     trafficState = TrafficState.DRIVING_WE;
                 }
@@ -62,7 +73,7 @@ public class TrafficController {
                     drivingWE();
                     effectuateState();
                 }
-                if (timeElapsed(duration)) {
+                if (timeElapsed(faseDuration)) {
                     resetTimer();
                     trafficState = TrafficState.PREPARE_STOP_W;
                 }
@@ -73,11 +84,23 @@ public class TrafficController {
                     preparingStopW();
                     effectuateState();
                 }
-                if (timeElapsed(duration)) {
+                if (timeElapsed(faseDuration)) {
                     resetTimer();
                     trafficState = TrafficState.DRIVING_EW;
                 }
                 break;
+            case OUT_OF_ORDER:
+                if (stateChanged()) {
+                    saveState();
+                    outOfOrder();
+                    effectuateState();
+                    trafficState = TrafficState.TERM;
+                }
+                break;
+            case TERM:
+                keepLooping = false;
+                break;
+
             default:
                 System.out.println("DEFAULT");
                 break;
@@ -93,34 +116,34 @@ public class TrafficController {
     }
 
     private void stopEW() {
-        trafficLightEast.setState(TrafficLight.State.STOP);
+        trafficLightEast.sendState(TrafficLightState.STOP);
     }
 
     private void stopWE() {
-        trafficLightWest.setState(TrafficLight.State.STOP);
+        trafficLightWest.sendState(TrafficLightState.STOP);
     }
 
     private void drivingEW() {
-        trafficLightEast.setState(TrafficLight.State.GO);
-        trafficLightWest.setState(TrafficLight.State.STOP);
+        trafficLightEast.sendState(TrafficLightState.GO);
+        trafficLightWest.sendState(TrafficLightState.STOP);
     }
 
     private void preparingStopE() {
-        trafficLightEast.setState(TrafficLight.State.TRANSITION);
+        trafficLightEast.sendState(TrafficLightState.TRANSITION);
     }
 
     private void drivingWE() {
-        trafficLightWest.setState(TrafficLight.State.GO);
-        trafficLightEast.setState(TrafficLight.State.STOP);
+        trafficLightWest.sendState(TrafficLightState.GO);
+        trafficLightEast.sendState(TrafficLightState.STOP);
     }
 
     private void preparingStopW() {
-        trafficLightWest.setState(TrafficLight.State.TRANSITION);
+        trafficLightWest.sendState(TrafficLightState.TRANSITION);
     }
 
-    private void blinking(){
-        trafficLightEast.setState(TrafficLight.State.TRANSITION);
-        trafficLightWest.setState(TrafficLight.State.TRANSITION);
+    private void outOfOrder() {
+        trafficLightEast.sendState(TrafficLightState.WARNING);
+        trafficLightWest.sendState(TrafficLightState.WARNING);
     }
 
     private boolean stateChanged() {
@@ -132,10 +155,8 @@ public class TrafficController {
     }
 
     private void effectuateState() {
-        String message = String.format("State: %s,   East: %s    West %s \n", this.trafficState,
-                this.trafficLightEast.getState(), this.trafficLightWest.getState());
-
-        TrafficLogger.logger.info(message);
+        String message = String.format("Traffic State: %s,    \n", this.trafficState);
+        TrafficLogger.log(message);
     }
 
     public enum TrafficState {
@@ -144,6 +165,24 @@ public class TrafficController {
         DRIVING_EW,
         PREPARE_STOP_E,
         DRIVING_WE,
+        OUT_OF_ORDER,
         TERM
     }
+
+    @Override
+    public void handleMessage(ResponseMessage message) {
+        // TODO Auto-generated method stub  handle ack nack
+        // throw new UnsupportedOperationException("Unimplemented method 'handleMessage'");
+    }
+
+    @Override
+    public void close() throws IOException {
+        keepLooping = false;
+        TrafficLogger.log("Closing TrafficController");
+    }
+
+    public void setFaseDuration(long faseDuration) {
+        this.faseDuration = faseDuration;
+    }
+
 }
