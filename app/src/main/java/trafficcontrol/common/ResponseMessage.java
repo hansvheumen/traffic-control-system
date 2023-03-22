@@ -1,6 +1,6 @@
 package trafficcontrol.common;
 
-public enum Message {
+public enum ResponseMessage {
     ACK,
     NACK
 }

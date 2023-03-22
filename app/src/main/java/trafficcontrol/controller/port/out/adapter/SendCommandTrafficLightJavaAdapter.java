@@ -1,22 +1,24 @@
 package trafficcontrol.controller.port.out.adapter;
 
+import trafficcontrol.common.TrafficAdapter;
 import trafficcontrol.common.TrafficLightState;
 import trafficcontrol.controller.port.out.SendCommandTrafficLightPort;
-import trafficcontrol.infrastructure.java.SendExecuteCommandJava;
+import trafficcontrol.light.port.in.adapter.ExecuteTrafficLightCommandJavaAdapter;
 import trafficcontrol.util.TrafficLogger;
 
 public class SendCommandTrafficLightJavaAdapter implements SendCommandTrafficLightPort {
 
-    private final SendExecuteCommandJava sendExecuteCommand;
+    private final ExecuteTrafficLightCommandJavaAdapter executeTrafficLightCommandJavaAdapter;
 
-    public SendCommandTrafficLightJavaAdapter(SendExecuteCommandJava sendExecuteCommand) {
-        this.sendExecuteCommand = sendExecuteCommand;
+    public SendCommandTrafficLightJavaAdapter(ExecuteTrafficLightCommandJavaAdapter sendExecuteCommand) {
+        this.executeTrafficLightCommandJavaAdapter = sendExecuteCommand;
     }
 
     @Override
     public void sendState(TrafficLightState state) {
-        TrafficLogger.log("SendCommandTrafficLightJavaAdapter.sendState()" + state);
-        // sendExecuteCommand.executeCommand(state);
+        String wrapMessageForTransport = TrafficAdapter.wrapMessageForTransport(state.name());
+        executeTrafficLightCommandJavaAdapter.executeCommand(wrapMessageForTransport);
+        TrafficLogger.log("SendCommandTrafficLightJavaAdapter.sendState() {}", state);
     }
 
 }

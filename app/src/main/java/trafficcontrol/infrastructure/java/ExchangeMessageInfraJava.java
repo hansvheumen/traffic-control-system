@@ -1,9 +1,7 @@
-package trafficcontrol.controller.port.in;
+package trafficcontrol.infrastructure.java;
 
 import trafficcontrol.common.ResponseMessage;
 
-public interface HandleMessageUseCase {
-
+public interface ExchangeMessageInfraJava {
     void handleMessage(ResponseMessage message);
-
 }

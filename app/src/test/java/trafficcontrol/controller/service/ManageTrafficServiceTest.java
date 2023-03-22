@@ -15,7 +15,7 @@ import org.mockito.Spy;
 import trafficcontrol.common.TrafficLightState;
 import trafficcontrol.controller.port.out.SendCommandTrafficLightPort;
 import trafficcontrol.controller.port.out.adapter.SendCommandTrafficLightJavaAdapter;
-import trafficcontrol.infrastructure.java.SendExecuteCommandJava;
+import trafficcontrol.infrastructure.java.ExchangeTrafficLightCommandInfraJava;
 
 // ExtendWith(MockitoExtension.class)
 public class ManageTrafficServiceTest {
@@ -29,9 +29,9 @@ public class ManageTrafficServiceTest {
     private static SendCommandTrafficLightPort sendCommandTrafficLightWest;
 
     @Mock
-    private static SendExecuteCommandJava sendExecuteCommandJavaEast;
+    private static ExchangeTrafficLightCommandInfraJava sendExecuteCommandJavaEast;
     @Spy
-    private static SendExecuteCommandJava sendExecuteCommandJavaWest;
+    private static ExchangeTrafficLightCommandInfraJava sendExecuteCommandJavaWest;
 
     @BeforeAll
     static void setup() {

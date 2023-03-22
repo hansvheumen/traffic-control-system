@@ -1,19 +1,23 @@
 package trafficcontrol.light.port.out.adapter;
 
-import trafficcontrol.common.Message;
-import trafficcontrol.infrastructure.java.SendHandleMessageJava;
+import trafficcontrol.common.ResponseMessage;
+import trafficcontrol.common.TrafficAdapter;
+import trafficcontrol.controller.port.in.adapter.HandleMessageJavaAdapter;
 import trafficcontrol.light.port.out.SendMessagePort;
+import trafficcontrol.util.TrafficLogger;
 
 public class SendMessageJavaAdapter implements SendMessagePort {
-    private final SendHandleMessageJava sendHandleMessageJava;
+    private final HandleMessageJavaAdapter handleMessageJavaAdapter;
 
-    public SendMessageJavaAdapter(SendHandleMessageJava sendHandleMessageJava) {
-        this.sendHandleMessageJava = sendHandleMessageJava;
+    public SendMessageJavaAdapter(HandleMessageJavaAdapter sendHandleMessageInfraJava) {
+        this.handleMessageJavaAdapter = sendHandleMessageInfraJava;
     }
 
     @Override
-    public void sendMessage(Message message) {
-        sendHandleMessageJava.handleMessage(message);
+    public void sendMessage(ResponseMessage message) {
+        String wrapMessageForTransport = TrafficAdapter.wrapMessageForTransport(message.name());
+        handleMessageJavaAdapter.handleMessage(wrapMessageForTransport);
+        TrafficLogger.log("SendMessageJavaAdapter.sendState() {}", message);
     }
 
 }

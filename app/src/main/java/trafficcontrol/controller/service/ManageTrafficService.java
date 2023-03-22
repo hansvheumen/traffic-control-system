@@ -3,7 +3,7 @@ package trafficcontrol.controller.service;
 import java.io.Closeable;
 import java.io.IOException;
 
-import trafficcontrol.common.Message;
+import trafficcontrol.common.ResponseMessage;
 import trafficcontrol.common.TrafficLightState;
 import trafficcontrol.controller.port.in.HandleMessageUseCase;
 import trafficcontrol.controller.port.out.SendCommandTrafficLightPort;
@@ -15,10 +15,6 @@ public class ManageTrafficService implements HandleMessageUseCase, Closeable {
     private SendCommandTrafficLightPort trafficLightWest;
     private long start;
     private long faseDuration = 1;
-    public void setFaseDuration(long faseDuration) {
-        this.faseDuration = faseDuration;
-    }
-
     private TrafficState trafficState;
     private TrafficState previousTrafficState;
     private boolean keepLooping = true;
@@ -159,7 +155,7 @@ public class ManageTrafficService implements HandleMessageUseCase, Closeable {
     }
 
     private void effectuateState() {
-        String message = String.format("State: %s,    \n", this.trafficState);
+        String message = String.format("Traffic State: %s,    \n", this.trafficState);
         TrafficLogger.log(message);
     }
 
@@ -174,14 +170,19 @@ public class ManageTrafficService implements HandleMessageUseCase, Closeable {
     }
 
     @Override
-    public void handleMessage(Message message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleMessage'");
+    public void handleMessage(ResponseMessage message) {
+        // TODO Auto-generated method stub  handle ack nack
+        // throw new UnsupportedOperationException("Unimplemented method 'handleMessage'");
     }
 
     @Override
     public void close() throws IOException {
-       keepLooping = false;
-       TrafficLogger.log("Closing TrafficController");
+        keepLooping = false;
+        TrafficLogger.log("Closing TrafficController");
     }
+
+    public void setFaseDuration(long faseDuration) {
+        this.faseDuration = faseDuration;
+    }
+
 }

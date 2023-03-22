@@ -1,9 +1,9 @@
 package trafficcontrol.light.port.out;
 
-import trafficcontrol.common.Message;
+import trafficcontrol.common.ResponseMessage;
 
 public interface SendMessagePort {
 
-    void sendMessage(Message message);
+    void sendMessage(ResponseMessage message);
 
 }

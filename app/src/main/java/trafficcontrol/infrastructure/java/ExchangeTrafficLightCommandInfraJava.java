@@ -2,6 +2,6 @@ package trafficcontrol.infrastructure.java;
 
 import trafficcontrol.common.TrafficLightState;
 
-public interface SendExecuteCommandJava {
+public interface ExchangeTrafficLightCommandInfraJava {
     void executeCommand(TrafficLightState command);
 }
