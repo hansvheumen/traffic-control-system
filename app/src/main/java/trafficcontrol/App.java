@@ -12,71 +12,73 @@ import trafficcontrol.light.service.ExecuteTrafficLightCommandService;
 
 public class App {
 
-    // TrafficController
-    private static HandleMessageJavaAdapter handleMessageJavaAdapter;
-    private static ManageTrafficService trafficController;
-    private static SendCommandTrafficLightPort sendCommandTrafficLightEast;
-    private static SendCommandTrafficLightPort sendCommandTrafficLightWest;
-
-    // TrafficLight
-    private static TrafficLight trafficLightEast;
-    private static TrafficLight trafficLightWest;
-    private static ExecuteTrafficLightCommandJavaAdapter executeTrafficLightCommandJavaAdapterEast;
-    private static ExecuteTrafficLightCommandJavaAdapter executeTrafficLightCommandJavaAdapterWest;
-    private static ExecuteTrafficLightCommandService excecuteTrafficLightCommandServiceEast;
-    private static ExecuteTrafficLightCommandService excecuteTrafficLightCommandServiceWest;
-    private static SendMessagePort sendMessagePortEast;
-    private static SendMessagePort sendMessagePortWest;
-
-    public static void main(String[] args) {
-        
-        // TODO optimize this code: now mutiple instances of the same object are created
-
-        sendCommandTrafficLightEast = new SendCommandTrafficLightJavaAdapter(executeTrafficLightCommandJavaAdapterEast);
-        sendCommandTrafficLightWest = new SendCommandTrafficLightJavaAdapter(executeTrafficLightCommandJavaAdapterWest);
-        trafficController = new ManageTrafficService(sendCommandTrafficLightEast, sendCommandTrafficLightWest);
-        handleMessageJavaAdapter = new HandleMessageJavaAdapter(trafficController);
-
-        // TrafficLight
-        trafficLightEast = new TrafficLight("East");
-        trafficLightWest = new TrafficLight("West");
-
-        excecuteTrafficLightCommandServiceEast = new ExecuteTrafficLightCommandService(trafficLightEast,
-                sendMessagePortEast);
-        excecuteTrafficLightCommandServiceWest = new ExecuteTrafficLightCommandService(trafficLightWest,
-                sendMessagePortWest);
-        sendMessagePortEast = new SendMessageJavaAdapter(handleMessageJavaAdapter);
-        sendMessagePortWest = new SendMessageJavaAdapter(handleMessageJavaAdapter);
-
-        excecuteTrafficLightCommandServiceEast = new ExecuteTrafficLightCommandService(trafficLightEast,
-                sendMessagePortEast);
-        excecuteTrafficLightCommandServiceWest = new ExecuteTrafficLightCommandService(trafficLightWest,
-                sendMessagePortWest);
-        executeTrafficLightCommandJavaAdapterEast = new ExecuteTrafficLightCommandJavaAdapter(
-                excecuteTrafficLightCommandServiceEast);
-        executeTrafficLightCommandJavaAdapterWest = new ExecuteTrafficLightCommandJavaAdapter(
-                excecuteTrafficLightCommandServiceWest);
-
         // TrafficController
-
-        sendCommandTrafficLightEast = new SendCommandTrafficLightJavaAdapter(executeTrafficLightCommandJavaAdapterEast);
-        sendCommandTrafficLightWest = new SendCommandTrafficLightJavaAdapter(executeTrafficLightCommandJavaAdapterWest);
-        trafficController = new ManageTrafficService(sendCommandTrafficLightEast, sendCommandTrafficLightWest);
-        handleMessageJavaAdapter = new HandleMessageJavaAdapter(trafficController);
+        private static HandleMessageJavaAdapter handleMessageJavaAdapter;
+        private static ManageTrafficService trafficController;
+        private static SendCommandTrafficLightPort sendCommandTrafficLightEast;
+        private static SendCommandTrafficLightPort sendCommandTrafficLightWest;
 
         // TrafficLight
-        trafficLightEast = new TrafficLight("East");
-        trafficLightWest = new TrafficLight("West");
+        private static TrafficLight trafficLightEast;
+        private static TrafficLight trafficLightWest;
+        private static ExecuteTrafficLightCommandJavaAdapter executeTrafficLightCommandJavaAdapterEast;
+        private static ExecuteTrafficLightCommandJavaAdapter executeTrafficLightCommandJavaAdapterWest;
+        private static ExecuteTrafficLightCommandService excecuteTrafficLightCommandServiceEast;
+        private static ExecuteTrafficLightCommandService excecuteTrafficLightCommandServiceWest;
+        private static SendMessagePort sendMessagePortEast;
+        private static SendMessagePort sendMessagePortWest;
 
-        excecuteTrafficLightCommandServiceEast = new ExecuteTrafficLightCommandService(trafficLightEast,
-                sendMessagePortEast);
-        excecuteTrafficLightCommandServiceWest = new ExecuteTrafficLightCommandService(trafficLightWest,
-                sendMessagePortWest);
-        sendMessagePortEast = new SendMessageJavaAdapter(handleMessageJavaAdapter);
-        sendMessagePortWest = new SendMessageJavaAdapter(handleMessageJavaAdapter);
-        trafficController = new ManageTrafficService(sendCommandTrafficLightEast, sendCommandTrafficLightWest);
+        public static void main(String[] args) throws InterruptedException {
 
-        trafficController.run();
-        // trafficController.fsm();
-    }
+                // Controller
+                trafficController = new ManageTrafficService();
+
+                // TrafficLight
+                trafficLightEast = new TrafficLight("East");
+                trafficLightWest = new TrafficLight("West");
+                excecuteTrafficLightCommandServiceEast = new ExecuteTrafficLightCommandService(trafficLightEast);
+                excecuteTrafficLightCommandServiceWest = new ExecuteTrafficLightCommandService(trafficLightWest);
+
+                configJavaAdapters();
+
+                int nrOfIterations = 5; // 0 for infinite (run)
+                switch (nrOfIterations) {
+                        case 0:
+                                trafficController.run();
+                                break;
+                        default:
+                                for (int i = 0; i < nrOfIterations; i++) {
+                                        trafficController.fsm();
+                                        Thread.sleep(1000);
+                                }
+                                break;
+                }
+
+        }
+
+        private static void configJavaAdapters() {
+
+                handleMessageJavaAdapter = new HandleMessageJavaAdapter(trafficController);
+
+                sendMessagePortEast = new SendMessageJavaAdapter(handleMessageJavaAdapter);
+                sendMessagePortWest = new SendMessageJavaAdapter(handleMessageJavaAdapter);
+
+                executeTrafficLightCommandJavaAdapterEast = new ExecuteTrafficLightCommandJavaAdapter(
+                                excecuteTrafficLightCommandServiceEast);
+                executeTrafficLightCommandJavaAdapterWest = new ExecuteTrafficLightCommandJavaAdapter(
+                                excecuteTrafficLightCommandServiceWest);
+
+                sendCommandTrafficLightEast = new SendCommandTrafficLightJavaAdapter(
+                                executeTrafficLightCommandJavaAdapterEast);
+                sendCommandTrafficLightWest = new SendCommandTrafficLightJavaAdapter(
+                                executeTrafficLightCommandJavaAdapterWest);
+
+                trafficController.setTrafficLightEast(sendCommandTrafficLightEast);
+                trafficController.setTrafficLightWest(sendCommandTrafficLightWest);
+
+                excecuteTrafficLightCommandServiceEast.setSendMessagePort(sendMessagePortEast);
+                excecuteTrafficLightCommandServiceWest.setSendMessagePort(sendMessagePortWest);
+
+        }
+
 }

@@ -16,13 +16,14 @@ import trafficcontrol.common.TrafficLightState;
 import trafficcontrol.controller.port.out.SendCommandTrafficLightPort;
 import trafficcontrol.controller.port.out.adapter.SendCommandTrafficLightJavaAdapter;
 import trafficcontrol.infrastructure.java.ExchangeTrafficLightCommandInfraJava;
+import trafficcontrol.light.domain.TrafficLight;
 
 // ExtendWith(MockitoExtension.class)
 public class ManageTrafficServiceTest {
 
     private static ManageTrafficService trafficController;
     // @Captor
-    @Mock
+    @Spy
     private static SendCommandTrafficLightPort sendCommandTrafficLightEast;
     // @Captor
     @Spy
@@ -33,6 +34,11 @@ public class ManageTrafficServiceTest {
     @Spy
     private static ExchangeTrafficLightCommandInfraJava sendExecuteCommandJavaWest;
 
+    @Mock
+    private static TrafficLight trafficLightEast = new TrafficLight("East");
+    @Mock
+    private static TrafficLight trafficLightWest = new TrafficLight("West");
+
     @BeforeAll
     static void setup() {
 
@@ -42,7 +48,9 @@ public class ManageTrafficServiceTest {
     public void init() {
         MockitoAnnotations.openMocks(this);
 
-        trafficController = new ManageTrafficService(sendCommandTrafficLightEast, sendCommandTrafficLightWest);
+        trafficController = new ManageTrafficService();
+        trafficController.setTrafficLightEast(sendCommandTrafficLightEast);
+        trafficController.setTrafficLightWest(sendCommandTrafficLightWest);
         trafficController.setFaseDuration(1);
     }
 
@@ -88,10 +96,12 @@ public class ManageTrafficServiceTest {
 
     @Test
     void testRun() throws InterruptedException, IOException {
-        sendCommandTrafficLightEast = new SendCommandTrafficLightJavaAdapter(null);
-        sendCommandTrafficLightWest = new SendCommandTrafficLightJavaAdapter(null);
-
-        trafficController = new ManageTrafficService(sendCommandTrafficLightEast, sendCommandTrafficLightWest);
+        // sendCommandTrafficLightEast = new SendCommandTrafficLightJavaAdapter(null);
+        // sendCommandTrafficLightWest = new SendCommandTrafficLightJavaAdapter(null);
+        // trafficController.setTrafficLightEast(sendCommandTrafficLightEast);
+        // trafficController.setTrafficLightWest(sendCommandTrafficLightWest);
+        // trafficController = new ManageTrafficService();
+        System.out.println("testRun: " + "start");
         trafficController.run();
         Thread.sleep(5 * 1000);
         System.out.println("testRun: " + 1);

@@ -19,10 +19,7 @@ public class ManageTrafficService implements HandleMessageUseCase, Closeable {
     private TrafficState previousTrafficState;
     private boolean keepLooping = true;
 
-    public ManageTrafficService(SendCommandTrafficLightPort trafficLightEast,
-            SendCommandTrafficLightPort trafficLightWest) {
-        this.trafficLightEast = trafficLightEast;
-        this.trafficLightWest = trafficLightWest;
+    public ManageTrafficService() {
         resetTimer();
         trafficState = TrafficState.INIT;
         previousTrafficState = TrafficState.INIT;
@@ -171,18 +168,27 @@ public class ManageTrafficService implements HandleMessageUseCase, Closeable {
 
     @Override
     public void handleMessage(ResponseMessage message) {
-        // TODO Auto-generated method stub  handle ack nack
-        // throw new UnsupportedOperationException("Unimplemented method 'handleMessage'");
+        // TODO Auto-generated method stub handle ack nack
+        // throw new UnsupportedOperationException("Unimplemented method
+        // 'handleMessage'");
     }
 
     @Override
     public void close() throws IOException {
-        keepLooping = false;
+        this.keepLooping = false;
         TrafficLogger.log("Closing TrafficController");
     }
 
     public void setFaseDuration(long faseDuration) {
         this.faseDuration = faseDuration;
+    }
+
+    public void setTrafficLightEast(SendCommandTrafficLightPort trafficLightEast) {
+        this.trafficLightEast = trafficLightEast;
+    }
+
+    public void setTrafficLightWest(SendCommandTrafficLightPort trafficLightWest) {
+        this.trafficLightWest = trafficLightWest;
     }
 
 }

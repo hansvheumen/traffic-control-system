@@ -11,22 +11,25 @@ import trafficcontrol.light.port.out.SendMessagePort;
 public class ExecuteTrafficLightCommandService implements ExecuteTrafficLightCommandUseCase {
 
     private final TrafficLight trafficLight;
-    private final SendMessagePort sendMessagePort;
+    private SendMessagePort sendMessagePort;
 
-    public ExecuteTrafficLightCommandService(TrafficLight trafficLight, SendMessagePort sendResponsePort) {
+    public ExecuteTrafficLightCommandService(TrafficLight trafficLight) {
         this.trafficLight = trafficLight;
-        this.sendMessagePort = sendResponsePort;
     }
 
     @Override
     public void executeCommand(TrafficLightCommand command) {
         if (TrafficLightCommand.UNKNOWN.equals(command)) {
             sendMessagePort.sendMessage(ResponseMessage.NACK);
-        } else {            
+        } else {
             TrafficLightState state = TrafficAdapter.mapEnum(command, TrafficLightState.class);
             trafficLight.setState(state);
             sendMessagePort.sendMessage(ResponseMessage.ACK);
         }
+    }
+
+    public void setSendMessagePort(SendMessagePort sendMessagePort) {
+        this.sendMessagePort = sendMessagePort;
     }
 
 }
