@@ -18,7 +18,7 @@ public class SendCommandTrafficLightJavaAdapter implements SendCommandTrafficLig
     public void sendState(TrafficLightState state) {
         String wrapMessageForTransport = TrafficAdapter.wrapMessageForTransport(state.name());
         executeTrafficLightCommandJavaAdapter.executeCommand(wrapMessageForTransport);
-        TrafficLogger.log("SendCommandTrafficLightJavaAdapter.sendState() {}", state);
+        TrafficLogger.log("SendCommandTrafficLightJavaAdapter.sendState() {}", TrafficLogger.cyanString(state.name()));
     }
 
 }

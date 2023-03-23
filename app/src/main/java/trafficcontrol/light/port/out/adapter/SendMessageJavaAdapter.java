@@ -17,7 +17,8 @@ public class SendMessageJavaAdapter implements SendMessagePort {
     public void sendMessage(ResponseMessage message) {
         String wrapMessageForTransport = TrafficAdapter.wrapMessageForTransport(message.name());
         handleMessageJavaAdapter.handleMessage(wrapMessageForTransport);
-        TrafficLogger.log("SendMessageJavaAdapter.sendState() {}", message);
+        TrafficLogger.log("SendMessageJavaAdapter.sendState() message {}",
+                TrafficLogger.yellowString(wrapMessageForTransport));
     }
 
 }

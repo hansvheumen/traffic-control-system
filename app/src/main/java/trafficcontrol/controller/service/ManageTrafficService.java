@@ -152,8 +152,7 @@ public class ManageTrafficService implements HandleMessageUseCase, Closeable {
     }
 
     private void effectuateState() {
-        String message = String.format("Traffic State: %s,    \n", this.trafficState);
-        TrafficLogger.log(message);
+        TrafficLogger.log("Traffic State: {}", TrafficLogger.redString( this.trafficState.name()));
     }
 
     public enum TrafficState {
