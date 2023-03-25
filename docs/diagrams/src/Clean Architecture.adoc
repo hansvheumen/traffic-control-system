@@ -1,0 +1,63 @@
+[plantuml, staqqqte-diagram, svg]
+-----
+@startuml clean architecture
+
+skin rose
+skinparam Nodesep 50 // horizontal spacing
+' skinparam ranksep 20 // vertical spacing
+
+skinparam ClassStereotypeFontColor blue
+' scale max 4000 width
+hide empty members
+' top to bottom direction
+
+title Trafic control system:\nClean Architecture
+
+
+package TrafficControl <<Folder>> {
+
+    class          ManageTrafficService
+    interface      HandleMessage\nUseCase <<Input Port>>
+    class          HandleMessage\nJavaAdapter <<Adapter>>
+    interface      SendCommand\nTrafficLightPort <<Output Port>>
+    together {
+        class          SendCommandTrafficLight\nJavaAdapter <<Adapter>>
+        ' class          SendCommandTrafficLight\nSocketAdapter <<Adapter>>
+    }
+
+    HandleMessage\nJavaAdapter ..> HandleMessage\nUseCase
+    HandleMessage\nUseCase <|.. ManageTrafficService
+    ManageTrafficService ..> SendCommand\nTrafficLightPort
+    SendCommand\nTrafficLightPort <|.. SendCommandTrafficLight\nJavaAdapter
+    ' SendCommand\nTrafficLightPort <|. SendCommandTrafficLight\nSocketAdapter
+
+}
+
+package TrafficLight <<Folder>> {
+
+    class          ExecuteTrafficLightCommand\nService
+    interface      ExecuteTrafficLightCommand\nUseCase <<Input Port>>
+    class          ExecuteTrafficLightCommand\nJavaAdapter <<Adapter>>
+    interface      SendMessagePort <<Output Port>>
+    class          SendMessage\nJavaAdapter <<Adapter>>
+    class          TrafficLight
+
+    ExecuteTrafficLightCommand\nJavaAdapter ..> ExecuteTrafficLightCommand\nUseCase
+    ExecuteTrafficLightCommand\nUseCase <|.. ExecuteTrafficLightCommand\nService
+    ExecuteTrafficLightCommand\nService ..> SendMessagePort
+    SendMessagePort <|.. SendMessage\nJavaAdapter
+    ExecuteTrafficLightCommand\nService .l.> TrafficLight
+
+}
+
+
+
+TrafficControl.SendCommandTrafficLight\nJavaAdapter .r.> TrafficLight.ExecuteTrafficLightCommand\nJavaAdapter
+TrafficControl.HandleMessage\nJavaAdapter <.l. TrafficLight.SendMessage\nJavaAdapter
+
+' start for layout purposes
+TrafficLight.ExecuteTrafficLightCommand\nJavaAdapter <.left[hidden]. TrafficControl.HandleMessage\nJavaAdapter
+' end layout purposes
+
+@enduml
+-----
