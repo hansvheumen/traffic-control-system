@@ -14,30 +14,18 @@ import org.mockito.Spy;
 
 import trafficcontrol.common.TrafficLightState;
 import trafficcontrol.controller.port.out.SendCommandTrafficLightPort;
-import trafficcontrol.controller.port.out.adapter.SendCommandTrafficLightJavaAdapter;
-import trafficcontrol.infrastructure.java.ExchangeTrafficLightCommandInfraJava;
-import trafficcontrol.light.domain.TrafficLight;
 
 // ExtendWith(MockitoExtension.class)
 public class ManageTrafficServiceTest {
 
-    private static ManageTrafficService trafficController;
+    private static ManageTrafficService sut;
     // @Captor
-    @Spy
+    @Mock
     private static SendCommandTrafficLightPort sendCommandTrafficLightEast;
     // @Captor
     @Spy
     private static SendCommandTrafficLightPort sendCommandTrafficLightWest;
 
-    @Mock
-    private static ExchangeTrafficLightCommandInfraJava sendExecuteCommandJavaEast;
-    @Spy
-    private static ExchangeTrafficLightCommandInfraJava sendExecuteCommandJavaWest;
-
-    @Mock
-    private static TrafficLight trafficLightEast = new TrafficLight("East");
-    @Mock
-    private static TrafficLight trafficLightWest = new TrafficLight("West");
 
     @BeforeAll
     static void setup() {
@@ -48,43 +36,43 @@ public class ManageTrafficServiceTest {
     public void init() {
         MockitoAnnotations.openMocks(this);
 
-        trafficController = new ManageTrafficService();
-        trafficController.setTrafficLightEast(sendCommandTrafficLightEast);
-        trafficController.setTrafficLightWest(sendCommandTrafficLightWest);
-        trafficController.setFaseDuration(1);
+        sut = new ManageTrafficService();
+        sut.setTrafficLightEast(sendCommandTrafficLightEast);
+        sut.setTrafficLightWest(sendCommandTrafficLightWest);
+        sut.setFaseDuration(1);
     }
 
     @Test
     void testFsmAllStates_ok() throws InterruptedException {
 
         System.out.println("State: INIT");
-        trafficController.fsm();
+        sut.fsm();
         verify(sendCommandTrafficLightEast).sendState(TrafficLightState.STOP);
         verify(sendCommandTrafficLightWest).sendState(TrafficLightState.STOP);
 
         waitAbit();
         System.out.println("State: DRIVING_EW");
-        trafficController.fsm();
+        sut.fsm();
         verify(sendCommandTrafficLightEast).sendState(TrafficLightState.GO);
 
         System.out.println("State: PREPARE_STOP_E");
         waitAbit();
-        trafficController.fsm();
+        sut.fsm();
         verify(sendCommandTrafficLightEast).sendState(TrafficLightState.TRANSITION);
 
         System.out.println("State: DRIVING_WE");
         waitAbit();
-        trafficController.fsm();
+        sut.fsm();
         verify(sendCommandTrafficLightWest).sendState(TrafficLightState.GO);
 
         System.out.println("State: PREPARE_STOP_W");
         waitAbit();
-        trafficController.fsm();
+        sut.fsm();
         verify(sendCommandTrafficLightWest).sendState(TrafficLightState.TRANSITION);
 
         System.out.println("State: DRIVING_EW");
         waitAbit();
-        trafficController.fsm();
+        sut.fsm();
         verify(sendCommandTrafficLightEast, atMost(2)).sendState(TrafficLightState.GO);
 
     }
@@ -102,10 +90,10 @@ public class ManageTrafficServiceTest {
         // trafficController.setTrafficLightWest(sendCommandTrafficLightWest);
         // trafficController = new ManageTrafficService();
         System.out.println("testRun: " + "start");
-        trafficController.run();
+        sut.run();
         Thread.sleep(5 * 1000);
         System.out.println("testRun: " + 1);
-        trafficController.close();
+        sut.close();
     }
     /*
      * Needed because of faseDuration = 1; in ManageTrafficService

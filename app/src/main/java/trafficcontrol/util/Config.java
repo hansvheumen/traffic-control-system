@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class Config {
     private static final String configFilename = "config.properties";
-    private static final Properties properties = new Properties();
+    public static final Properties properties = new Properties();
 
     private Config() {
     }
@@ -27,8 +27,16 @@ public class Config {
         return properties.getProperty(key);
     }
 
+    public static Integer getInteger(String key) {
+        return Integer.parseInt(properties.getProperty(key));
+    }
+
+    public static Long getLong(String key) {
+        return Long.parseLong(properties.getProperty(key));
+    }
+
     public static long getFaseDuration() {
-        return Long.parseLong(properties.getProperty("faseDuration"));
+        return getLong("faseDuration");
     }
 
     private static List<String> getPropertyAsList(String property) {

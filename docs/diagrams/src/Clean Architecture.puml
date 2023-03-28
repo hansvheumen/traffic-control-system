@@ -9,52 +9,52 @@ skinparam ClassStereotypeFontColor blue
 hide empty members
 ' top to bottom direction
 
-title Trafic control system:\nClean Architecture
+title Trafic control system:Clean Architecture
 
 
 package TrafficControl <<Folder>> {
 
     class          ManageTrafficService
-    interface      HandleMessage\nUseCase <<Input Port>>
-    class          HandleMessage\nJavaAdapter <<Adapter>>
-    interface      SendCommand\nTrafficLightPort <<Output Port>>
+    interface      HandleMessageUseCase <<Input Port>>
+    class          HandleMessageJavaAdapter <<Adapter>>
+    interface      SendCommandTrafficLightPort <<Output Port>>
     together {
-        class          SendCommandTrafficLight\nJavaAdapter <<Adapter>>
-        ' class          SendCommandTrafficLight\nSocketAdapter <<Adapter>>
+        class          SendCommandTrafficLightJavaAdapter <<Adapter>>
+        ' class          SendCommandTrafficLightSocketAdapter <<Adapter>>
     }
 
-    HandleMessage\nJavaAdapter ..> HandleMessage\nUseCase
-    HandleMessage\nUseCase <|.. ManageTrafficService
-    ManageTrafficService ..> SendCommand\nTrafficLightPort
-    SendCommand\nTrafficLightPort <|.. SendCommandTrafficLight\nJavaAdapter
-    ' SendCommand\nTrafficLightPort <|. SendCommandTrafficLight\nSocketAdapter
+    HandleMessageJavaAdapter ..> HandleMessageUseCase
+    HandleMessageUseCase <|.. ManageTrafficService
+    ManageTrafficService ..> SendCommandTrafficLightPort
+    SendCommandTrafficLightPort <|.. SendCommandTrafficLightJavaAdapter
+    ' SendCommandTrafficLightPort <|. SendCommandTrafficLightSocketAdapter
 
 }
 
 package TrafficLight <<Folder>> {
 
-    class          ExecuteTrafficLightCommand\nService
-    interface      ExecuteTrafficLightCommand\nUseCase <<Input Port>>
-    class          ExecuteTrafficLightCommand\nJavaAdapter <<Adapter>>
+    class          ExecuteTrafficLightCommandService
+    interface      ExecuteTrafficLightCommandUseCase <<Input Port>>
+    class          ExecuteTrafficLightCommandJavaAdapter <<Adapter>>
     interface      SendMessagePort <<Output Port>>
-    class          SendMessage\nJavaAdapter <<Adapter>>
+    class          SendMessageJavaAdapter <<Adapter>>
     class          TrafficLight
 
-    ExecuteTrafficLightCommand\nJavaAdapter ..> ExecuteTrafficLightCommand\nUseCase
-    ExecuteTrafficLightCommand\nUseCase <|.. ExecuteTrafficLightCommand\nService
-    ExecuteTrafficLightCommand\nService ..> SendMessagePort
-    SendMessagePort <|.. SendMessage\nJavaAdapter
-    ExecuteTrafficLightCommand\nService .l.> TrafficLight
+    ExecuteTrafficLightCommandJavaAdapter ..> ExecuteTrafficLightCommandUseCase
+    ExecuteTrafficLightCommandUseCase <|.. ExecuteTrafficLightCommandService
+    ExecuteTrafficLightCommandService ..> SendMessagePort
+    SendMessagePort <|.. SendMessageJavaAdapter
+    ExecuteTrafficLightCommandService .l.> TrafficLight
 
 }
 
 
 
-TrafficControl.SendCommandTrafficLight\nJavaAdapter .r.> TrafficLight.ExecuteTrafficLightCommand\nJavaAdapter
-TrafficControl.HandleMessage\nJavaAdapter <.l. TrafficLight.SendMessage\nJavaAdapter
+TrafficControl.SendCommandTrafficLightJavaAdapter .r.> TrafficLight.ExecuteTrafficLightCommandJavaAdapter
+TrafficControl.HandleMessageJavaAdapter <.l. TrafficLight.SendMessageJavaAdapter
 
 ' start for layout purposes
-TrafficLight.ExecuteTrafficLightCommand\nJavaAdapter <.left[hidden]. TrafficControl.HandleMessage\nJavaAdapter
+TrafficControl .left[hidden].> TrafficLight
 ' end layout purposes
 
 @enduml

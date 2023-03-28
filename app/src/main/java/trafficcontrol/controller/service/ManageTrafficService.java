@@ -13,11 +13,13 @@ import trafficcontrol.util.TrafficLogger;
 public class ManageTrafficService implements HandleMessageUseCase, Closeable {
     private SendCommandTrafficLightPort trafficLightEast;
     private SendCommandTrafficLightPort trafficLightWest;
-    private long start;
+    private long startTrafficStateFase;
     private long faseDuration = 1;
     private TrafficState trafficState;
     private TrafficState previousTrafficState;
     private boolean keepLooping = true;
+
+    private long startTimout;
 
     public ManageTrafficService() {
         resetTimer();
@@ -105,42 +107,42 @@ public class ManageTrafficService implements HandleMessageUseCase, Closeable {
     }
 
     private boolean timeElapsed(long duration) {
-        return System.currentTimeMillis() - start > duration;
+        return System.currentTimeMillis() - startTrafficStateFase > duration;
     }
 
     private void resetTimer() {
-        start = System.currentTimeMillis();
+        startTrafficStateFase = System.currentTimeMillis();
     }
 
     private void stopEW() {
-        trafficLightEast.sendState(TrafficLightState.STOP);
+        sendMessage(trafficLightEast, TrafficLightState.STOP);
     }
 
     private void stopWE() {
-        trafficLightWest.sendState(TrafficLightState.STOP);
+        sendMessage(trafficLightWest, TrafficLightState.STOP);
     }
 
     private void drivingEW() {
-        trafficLightEast.sendState(TrafficLightState.GO);
-        trafficLightWest.sendState(TrafficLightState.STOP);
+        sendMessage(trafficLightWest, TrafficLightState.STOP);
+        sendMessage(trafficLightEast, TrafficLightState.GO);
     }
 
     private void preparingStopE() {
-        trafficLightEast.sendState(TrafficLightState.TRANSITION);
+        sendMessage(trafficLightEast, TrafficLightState.TRANSITION);
     }
 
     private void drivingWE() {
-        trafficLightWest.sendState(TrafficLightState.GO);
-        trafficLightEast.sendState(TrafficLightState.STOP);
+        sendMessage(trafficLightEast, TrafficLightState.STOP);
+        sendMessage(trafficLightWest, TrafficLightState.GO);
     }
 
     private void preparingStopW() {
-        trafficLightWest.sendState(TrafficLightState.TRANSITION);
+        sendMessage(trafficLightWest, TrafficLightState.TRANSITION);
     }
 
     private void outOfOrder() {
-        trafficLightEast.sendState(TrafficLightState.WARNING);
-        trafficLightWest.sendState(TrafficLightState.WARNING);
+        sendMessage(trafficLightEast, TrafficLightState.WARNING);
+        sendMessage(trafficLightWest, TrafficLightState.WARNING);
     }
 
     private boolean stateChanged() {
@@ -152,7 +154,15 @@ public class ManageTrafficService implements HandleMessageUseCase, Closeable {
     }
 
     private void effectuateState() {
-        TrafficLogger.log("Traffic State: {}", TrafficLogger.redString( this.trafficState.name()));
+        TrafficLogger.log("Traffic State: {}", TrafficLogger.redString(this.trafficState.name()));
+    }
+
+    private ResponseMessage sendMessage(SendCommandTrafficLightPort trafficLight, TrafficLightState state) {
+
+        final Integer nrOfTries = Config.getInteger("nrOfTries");
+        final int timeoutLimit = Config.getInteger("timeoutLimit");       
+        trafficLight.sendState(state);
+        return ResponseMessage.ACK;
     }
 
     public enum TrafficState {

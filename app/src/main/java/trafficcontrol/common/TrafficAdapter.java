@@ -5,8 +5,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class TrafficAdapter {
-    public static <E extends Enum<E>, F extends Enum<F>> F mapEnum(E enum1, Class<F> enum2Class) {
 
+    public static final String MESSAGE_DELIMETER_BEGIN = "$";
+    public static final String MESSAGE_DELIMETER_END = ";";
+
+    public static <E extends Enum<E>, F extends Enum<F>> F mapEnum(E enum1, Class<F> enum2Class) {
         return Enum.valueOf(enum2Class, enum1.name());
     }
 
@@ -29,7 +32,8 @@ public class TrafficAdapter {
      */
     public static boolean isValidMessageSyntax(String message) {
         message = message.trim();
-        return message.startsWith("$") && message.endsWith(";") && message.length() > 2;
+        return message.startsWith(MESSAGE_DELIMETER_BEGIN) && message.endsWith(MESSAGE_DELIMETER_END)
+                && message.length() > 2;
     }
 
     public static ResponseMessage string2ResponseMessage(String transportMessage) {
@@ -57,7 +61,7 @@ public class TrafficAdapter {
     }
 
     public static String wrapMessageForTransport(String message) {
-        return "$" + message + ";";
+        return String.join(MESSAGE_DELIMETER_BEGIN, message.trim(), MESSAGE_DELIMETER_END);
     }
 
     private static Set<String> enumTrafficLightStateToStrings() {
